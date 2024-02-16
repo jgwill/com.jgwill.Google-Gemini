@@ -2,20 +2,20 @@
     "KPlugin": {
         "Authors": [
             {
-                "Name": "DarkEye"
+                "Name": "samirgaire10"
             }
         ],
         "Category": "Online Services",
-        "Description": "ChatGPT plasmoid for Plasma.",
+        "Description": "Google-Gemini plasmoid for Plasma.",
         "Icon": "search-symbolic",
-        "Id": "com.darkeye.chatGPT",
+        "Id": "com.samirgaire10.Google-Gemini",
         "License": "BSD 3.0",
-        "Name": "ChatGPT Plasmoid",
+        "Name": "Google-Gemini Plasmoid",
         "ServiceTypes": [
             "Plasma/Applet"
         ],
         "Version": "0.8",
-        "Website": "https://github.com/dark-eye/com.darkeye.chatGPT"
+        "Website": "https://github.com/samirgaire10/com.samirgaire10.Google-Gemini"
     },
     "X-Plasma-API": "declarativeappletscript",
     "X-Plasma-MainScript": "ui/main.qml",

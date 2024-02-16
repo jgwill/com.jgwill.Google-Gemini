@@ -6,7 +6,6 @@
 import QtQuick 2.3
 import QtQuick.Layouts 1.0
 import QtQuick.Controls 2.0
-import QtQuick.Dialogs 1.3
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.plasma.plasmoid 2.0
@@ -33,70 +32,11 @@ Item {
 		Layout.preferredWidth: 520 * PlasmaCore.Units.devicePixelRatio
 		Layout.preferredHeight: 840 * PlasmaCore.Units.devicePixelRatio
 
-		//-----------------------------  Helpers ------------------
-		// Added workaround by @zontafil thank you!
 		
-		Timer {
-			id: exposeTimer
 
-			interval: plasmoid.configuration.focusInterval ? plasmoid.configuration.focusInterval : 0
-			running: false
-			onTriggered: {
-				gptWebView.forceActiveFocus();
-				gptWebView.focus=true;
-				gptWebView.runJavaScript("document.userScripts.setInputFocus();");
-				console.log("Plasmoid exposeTimer :"+plasmoid.expanded )
-			}
-		}
-
-		Timer {
-			id: reloadTimer
-
-			interval: 1000
-			running:  !plasmoid.expand
-			onTriggered: if(	!loadedsuccessfully &&
-								!plasmoid.expanded &&
-								Date.now() > root.nextReloadTime &&
-								root.reloadRetries < root.maxReloadRetiries ){
-					console.log("Failed to load ChatGPT page, reloading as we are hidden..");
-					root.reloadRetries +=1;
-					root.nextReloadTime = Math.min(Date.now() + 1000 * (2**root.reloadRetries) , plasmoid.configuration.maxReloadTime * 1000);
-					gptWebView.reload();
-			}
-		}
-
-		Connections {
-			target: plasmoid
-			function onActivated() {
-				console.log("Plasmoid revealed to user")
-			}
-			function onStatusChanged() {
-				console.log("Plasmoid status changed "+plasmoid.status)
-			}
-			function hideOnWindowDeactivateChanged() {
-				console.log("Plasmoid hideOnWindowDeactivateChanged changed")
-			}
-			function onExpandedChanged() {
-				if(gptWebView && plasmoid.expanded) {
-					if(gptWebView.LoadStatus == WebEngineView.LoadFailedStatus) {
-						gptWebView.reload();
-					}
-
-					exposeTimer.start();
-				}
-				if(!plasmoid.expanded && root.themeMismatch && plasmoid.configuration.matchTheme ) {
-					root.themeMismatch = false;
-					gptWebView.reloadAndBypassCache();
-				}
-				console.log("Plasmoid onExpandedChanged :"+plasmoid.expanded )
-			}
-		}
+		
 
 		//------------------------------------- UI -----------------------------------------
-
-		FileDialog {
-			id:fileDialog
-		}
 
 		ColumnLayout {
 			spacing: Kirigami.Units.mediumSpacing
@@ -115,24 +55,12 @@ Item {
 							Layout.fillWidth: true
 							spacing: Kirigami.Units.mediumSpacing
 
-							PlasmaComponents.ToolButton {
-								text: i18n("Back to ChatGPT")
-								visible: !gptWebView.url.toString().match(/chat\.openai\.com\/(|chat|auth)/);
-								enabled: visible
-								icon.name: "draw-arrow-back"
-								display: PlasmaComponents.ToolButton.IconOnly
-								PlasmaComponents.ToolTip.text: text
-								PlasmaComponents.ToolTip.delay: Kirigami.Units.toolTipDelay
-								PlasmaComponents.ToolTip.visible: hovered
-								onClicked: gptWebView.url = "https://chat.openai.com/chat";
-							}
-
 							Kirigami.Heading {
-								id: titleText
+								id: samirgaire10
 								Layout.alignment: Qt.AlignCenter
 								Layout.fillWidth: true
 								verticalAlignment: Text.AlignVCenter
-								text: i18n("ChatGPT")
+								text: i18n("Google-Gemini")
 								color: theme.textColor
 							}
 						}
@@ -229,7 +157,6 @@ Item {
 			}
 		}
 
-		//-------------------------  Actual ChatGPT View --------------------------
 
 		WebEngineView {
 				// anchors.fill: parent
@@ -238,7 +165,7 @@ Item {
 
 				id: gptWebView
 				focus: true
-				url: "https://chat.openai.com/chat"
+				url: "https://gemini.google.com/app"
 
 				profile: WebEngineProfile {
 					id: chatGptProfile
@@ -246,9 +173,6 @@ Item {
 					offTheRecord: false
 					httpCacheType: WebEngineProfile.DiskHttpCache
 					persistentCookiesPolicy: WebEngineProfile.ForcePersistentCookies
-					downloadPath: plasmoid.configuration.downloadLocation ?
-										plasmoid.configuration.downloadLocation :
-										chatGptProfile.downloadPath
 					userScripts: [
 						WebEngineScript {
 							injectionPoint: WebEngineScript.DocumentCreation
@@ -257,78 +181,10 @@ Item {
 							sourceUrl: "./js/helper_functions.js"
 						}
 					]
-					onDownloadRequested : {
-						console.log("onDownloadRequested : " + download.downloadFileName);
-						if( plasmoid.configuration.downloadLocation ) {
-							download.accept();
-						}
-					}
 				}
 
 				settings.javascriptCanAccessClipboard: plasmoid.configuration.allowClipboardAccess
 
-				onLoadingChanged: {
-					if(WebEngineView.LoadSucceededStatus === loadRequest.status) {
-						root.reloadRetries = 0;
-						let themeLightness = (isDark(theme.backgroundColor) ? 'dark' : 'light') ;
-
-						gptWebView.runJavaScript("document.userScripts.setConfig("+JSON.stringify(plasmoid.configuration)+");");
-						gptWebView.runJavaScript("document.userScripts.setSendOnEnter();");
-						gptWebView.runJavaScript("document.userScripts.getTheme();",function(theme) {
-							if( !plasmoid.expanded && plasmoid.configuration.matchTheme && (!theme ||  theme !== themeLightness)) {
-								gptWebView.runJavaScript("document.userScripts.setTheme('"+themeLightness+"');");
-								gptWebView.relreloadAndBypassCacheoad();
-							} else if(plasmoid.configuration.matchTheme && theme !== themeLightness) {
-								root.themeMismatch = true;
-							}
-						});
-						gptWebView.runJavaScript("document.userScripts.setTheme('"+themeLightness+"');");
-					}
-
-
-					loadedsuccessfully = 	( loadRequest.status == WebEngineLoadRequest.LoadSucceededStatus && (gptWebView.loadProgress == 100 || gptWebView.loadProgress == 0))
-										&&
-											( !gptWebView.loading )
-
-				}
-
-				onFileDialogRequested: {
-					console.log("onFileDialogRequested");
-					//console.log(JSON.stringify(request));
-					fileDialog.title = "Choose File";
-					fileDialog.accept.connect(function (request){
-						request.dialogAccept(fileDialog.selectedFiles);
-					});
-					fileDialog.reject.connect(function(request) {
-						request.dialogReject()
-					});
-					fileDialog.open();
-					request.accepted = true
-				}
-
-				onJavaScriptDialogRequested : {
-					console.log("onJavaScriptDialogRequested");
-				}
-
-				onNewViewRequested : {
-					console.log("onNewViewRequested");
-				}
-
-				onJavaScriptConsoleMessage: if( Qt.application.arguments[0] == "plasmoidviewer" ) {
-					console.log("Chat-GPT: " + message);
-				}
-
-				onNavigationRequested: {
-					if(request.navigationType == WebEngineNavigationRequest.LinkClickedNavigation) {
-						if(request.url.toString().match(/https?\:\/\/chat\.openai\.com/)) {
-							gptWebView.url = request.url;
-							console.log(request.url);
-						} else {
-							Qt.openUrlExternally(request.url);
-							request.action = WebEngineNavigationRequest.IgnoreRequest;
-						}
-					}
-				}
 
 				function isDark(color) {
 					let luminance = 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;

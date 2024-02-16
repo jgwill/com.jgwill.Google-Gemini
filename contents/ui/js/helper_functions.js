@@ -1,19 +1,12 @@
 document.userScripts={saveData:{},config:{}};
 
 document.userScripts.getMainInput = function() {
-		return document.querySelector('textarea#prompt-textarea');
+		return document.querySelector('textarea.m-0');
 }
 
 document.userScripts.getSendButton = function() {
-		console.log(document.querySelector('button[data-testid=send-button]'));
-		return document.querySelector('button[data-testid=send-button]');
+		return document.querySelector('textarea.m-0 + button.p-1');
 }
-
-document.userScripts.getStopButton = function() {
-		return document.querySelector('button[aria-label=Stop generating]');
-}
-
-
 
 
 document.userScripts.setInputFocus = function () {
@@ -30,20 +23,11 @@ document.userScripts.setSendOnEnter = function () {
 	if(inputElement && !document.userScripts.saveData.oldOnPress) {
 		document.userScripts.saveData.oldOnPress = inputElement.onkeypress;
 		inputElement.onkeypress = function(e) {
-			if(document.userScripts.config.sendOnEnter) {
-				if(	!e.shiftKey && !e.ctrlKey )
-					switch(e.keyCode) {
-						case 13 : {
-								document.userScripts.getSendButton().click();
-								return false;
-						}
-						break;
-						case 27 : {
-								document.userScripts.getStopButton().click();
-								return false;
-						}
-						break;
-					}
+			if(	e.keyCode == 13  && 
+				!e.shiftKey && !e.ctrlKey && 
+				document.userScripts.config.sendOnEnter) {
+					document.userScripts.getSendButton().click();
+					return false;
 			}
 		}
 	}
