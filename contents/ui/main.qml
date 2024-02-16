@@ -83,20 +83,6 @@ Item {
 						}
 
 						PlasmaComponents.ToolButton {
-							id: proButton
-							checkable: true
-							checked: proLinkContainer.visible
-							text: i18n("Im a Pro")
-							visible: gptWebView.url.toString().match(/chat\.openai\.com\/auth/);
-							icon.name: "x-office-contact"
-							display: PlasmaComponents.ToolButton.IconOnly
-							PlasmaComponents.ToolTip.text: text
-							PlasmaComponents.ToolTip.delay: Kirigami.Units.toolTipDelay
-							PlasmaComponents.ToolTip.visible: hovered
-							onToggled: proLinkContainer.visible = !proLinkContainer.visible;
-						}
-
-						PlasmaComponents.ToolButton {
 							id: refreshButton
 							text: i18n("Reload")
 							icon.name: "view-refresh"
