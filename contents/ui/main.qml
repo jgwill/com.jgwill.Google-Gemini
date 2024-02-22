@@ -68,7 +68,7 @@ Item {
 						PlasmaComponents.ToolButton {
 							text: i18n("Debug")
 							checkable: true
-							checked: gptWebViewInspector && gptWebViewInspector.enabled
+							checked: googlegeminiWebViewWebViewInspector && googlegeminiWebViewWebViewInspector.enabled
 							visible: Qt.application.arguments[0] == "plasmoidviewer" || plasmoid.configuration.debugConsole
 							enabled: visible
 							icon.name: "format-text-code"
@@ -77,8 +77,8 @@ Item {
 							PlasmaComponents.ToolTip.delay: Kirigami.Units.toolTipDelay
 							PlasmaComponents.ToolTip.visible: hovered
 							onToggled: {
-								gptWebViewInspector.visible = !gptWebViewInspector.visible;
-								gptWebViewInspector.enabled = visible || gptWebViewInspector.visible
+								googlegeminiWebViewWebViewInspector.visible = !googlegeminiWebViewWebViewInspector.visible;
+								googlegeminiWebViewWebViewInspector.enabled = visible || googlegeminiWebViewWebViewInspector.visible
 							}
 						}
 
@@ -90,7 +90,7 @@ Item {
 							PlasmaComponents.ToolTip.text: text
 							PlasmaComponents.ToolTip.delay: Kirigami.Units.toolTipDelay
 							PlasmaComponents.ToolTip.visible: hovered
-							onClicked: gptWebView.reload();
+							onClicked: googlegeminiWebViewWebView.reload();
 						}
 
 						PlasmaComponents.ToolButton {
@@ -126,7 +126,7 @@ Item {
 							enabled: proLinkContainer.visible
 							icon.name: "go-next"
 							onClicked:  {
-								gptWebView.url = proLinkField.text;
+								googlegeminiWebViewWebView.url = proLinkField.text;
 								proLinkContainer.visible= false;
 							}
 						}
@@ -149,13 +149,13 @@ Item {
 				Layout.fillHeight: true
 				Layout.fillWidth: true
 
-				id: gptWebView
+				id: googlegeminiWebViewWebView
 				focus: true
 				url: "https://gemini.google.com/app"
 
 				profile: WebEngineProfile {
-					id: chatGptProfile
-					storageName: "chat-gpt"
+					id: googlegeminiProfile
+					storageName: "google gemini"
 					offTheRecord: false
 					httpCacheType: WebEngineProfile.DiskHttpCache
 					persistentCookiesPolicy: WebEngineProfile.ForcePersistentCookies
@@ -178,7 +178,7 @@ Item {
 				}
 			}
 			WebEngineView {
-				id:gptWebViewInspector
+				id:googlegeminiWebViewWebViewInspector
 				enabled: false
 				visible: false
 				z:100
@@ -186,7 +186,7 @@ Item {
 
 				Layout.fillWidth:true
 				Layout.alignment:Qt.AlignBottom
-				inspectedView:enabled ? gptWebView : null
+				inspectedView:enabled ? googlegeminiWebViewWebView : null
 			}
 	}
 }
