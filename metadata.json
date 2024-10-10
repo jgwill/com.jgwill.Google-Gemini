@@ -2,20 +2,20 @@
     "KPlugin": {
         "Authors": [
             {
-                "Name": "samirgaire10"
+                "Name": "jgwill"
             }
         ],
         "Category": "Online Services",
-        "Description": "Google-Gemini plasmoid for Plasma.",
+        "Description": "JGWill Google-Gemini plasmoid for Plasma.",
         "Icon": "search-symbolic",
-        "Id": "com.samirgaire10.Google-Gemini",
+        "Id": "com.jgwill.Google-Gemini",
         "License": "BSD 3.0",
-        "Name": "Google-Gemini Plasmoid",
+        "Name": "JGWill-Google-Gemini Plasmoid",
         "ServiceTypes": [
             "Plasma/Applet"
         ],
         "Version": "0.8",
-        "Website": "https://github.com/samirgaire10/com.samirgaire10.Google-Gemini"
+        "Website": "https://github.com/jgwill/com.jgwill.Google-Gemini"
     },
     "X-Plasma-API": "declarativeappletscript",
     "X-Plasma-MainScript": "ui/main.qml",
