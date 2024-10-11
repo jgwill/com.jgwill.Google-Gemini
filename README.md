@@ -1,3 +1,19 @@
+# JGWillGemini kde Widget
+
+```bash
+launch_pgemini()                                                             
+{
+        (       (plasmawindowed  com.samirgaire10.Google-Gemini &>/dev/null ) ||echo "see jgwill/com.jgwill.Google-Gemini on github") & )                         
+}
+alias pgemini=launch_pgemini
+```
+
+## FORKED
+
+----
+ORIGINAL FORKED README
+----
+
 # Google-Gemini kde Widget
 
 <h1 align="center">
